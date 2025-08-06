@@ -1,31 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/common/data/areas.dart';
-import 'package:organization/common/data/months.dart';
 import 'package:organization/features/weekly_council/application/providers/weekly_council_provider.dart';
+import 'package:organization/features/weekly_council/domain/enums/months.dart';
+import 'package:organization/features/weekly_council/domain/enums/status.dart';
+import 'package:organization/features/weekly_council/domain/enums/week.dart';
 import 'package:organization/features/weekly_council/domain/model/weekly_council_model.dart';
 
 // ignore: must_be_immutable
 class WeeklyFormWidget extends ConsumerWidget {
   WeeklyFormWidget({super.key});
 
-  final List<String> statusOptions = ['Done', 'Not Done', 'No Response'];
+  // final List<String> statusOptions = ['Done', 'Not Done', 'No Response'];
   int selectedYear = 2025;
-  String selectedMonth = '';
-  String selectedWeek = '';
-
-  final List<String> weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
+  Months selectedMonth = Months.january;
+  MonthlyWeeks selectedWeek = MonthlyWeeks.week1;
 
   @override
   Widget build(BuildContext context, ref) {
+    // tracking area meeting status
     List<String> selectedStatusList = List.generate(
       areaList.length,
-      (_) => statusOptions[0],
+      (_) => MeetingStatus.values[0].toString(),
     );
+
+    //tracking area's participation percentage
     List<TextEditingController> percentageControllers = List.generate(
       areaList.length,
       (_) => TextEditingController(),
     );
+
     return Padding(
       padding: MediaQuery.of(context).viewInsets,
       child: StatefulBuilder(
@@ -60,12 +64,15 @@ class WeeklyFormWidget extends ConsumerWidget {
                         }
                       },
                     ),
-                    DropdownButton<String>(
-                      value: selectedMonth.isEmpty ? null : selectedMonth,
+                    DropdownButton<Months>(
+                      value: selectedMonth,
                       hint: const Text('Select Month'),
-                      items: months
+                      items: Months.values
                           .map(
-                            (m) => DropdownMenuItem(value: m, child: Text(m)),
+                            (m) => DropdownMenuItem(
+                              value: m,
+                              child: Text(m.toString()),
+                            ),
                           )
                           .toList(),
                       onChanged: (val) {
@@ -76,12 +83,15 @@ class WeeklyFormWidget extends ConsumerWidget {
                         }
                       },
                     ),
-                    DropdownButton<String>(
-                      value: selectedWeek.isEmpty ? null : selectedWeek,
+                    DropdownButton<MonthlyWeeks>(
+                      value: selectedWeek,
                       hint: const Text('Select Week'),
-                      items: weeks
+                      items: MonthlyWeeks.values
                           .map(
-                            (w) => DropdownMenuItem(value: w, child: Text(w)),
+                            (w) => DropdownMenuItem(
+                              value: w,
+                              child: Text(w.toString()),
+                            ),
                           )
                           .toList(),
                       onChanged: (val) {
@@ -146,11 +156,11 @@ class WeeklyFormWidget extends ConsumerWidget {
                               flex: 4,
                               child: DropdownButtonFormField<String>(
                                 value: selectedStatusList[i],
-                                items: statusOptions
+                                items: MeetingStatus.values
                                     .map(
                                       (status) => DropdownMenuItem(
-                                        value: status,
-                                        child: Text(status),
+                                        value: status.toString(),
+                                        child: Text(status.toString()),
                                       ),
                                     )
                                     .toList(),
@@ -189,12 +199,17 @@ class WeeklyFormWidget extends ConsumerWidget {
                   child: ElevatedButton(
                     onPressed: () async {
                       final List<WeeklyData> weekListData = [];
-                      // for (var i = 0; areaList.length; i++) {
-                      //   final w = WeeklyData(
-                      //     area: areaList[i],
-                      //     status: statusOptions[i],
-                      //   );
-                      // }
+                      for (var i = 0; i < areaList.length; i++) {
+                        final w = WeeklyData(
+                          area: areaList[i],
+                          status: selectedStatusList[i],
+                          percentage: int.parse(percentageControllers[i].text),
+                          month: selectedMonth,
+                          week: selectedWeek,
+                          year: selectedYear,
+                        );
+                        weekListData.add(w);
+                      }
                       ref.read(saveWeeklyCouncilProvider(weekListData));
                     },
                     child: const Text('Insert'),

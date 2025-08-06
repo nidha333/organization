@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/features/weekly_council/application/providers/weekly_council_provider.dart';
-import 'package:organization/features/weekly_council/domain/model/weekly_council_model.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council.groupbarsheet.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council_barchart.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council_flchart.dart';
 import 'package:organization/features/weekly_council/presentation/widgets/weekly_form_widget.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class WeeklyCouncilPage extends ConsumerWidget {
   const WeeklyCouncilPage({super.key});

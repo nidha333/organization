@@ -1,9 +1,12 @@
+import 'package:organization/features/weekly_council/domain/enums/months.dart';
+import 'package:organization/features/weekly_council/domain/enums/week.dart';
+
 class WeeklyData {
   final String area;
   final String status;
   final int percentage;
-  final String month;
-  final int week;
+  final Months month;
+  final MonthlyWeeks week;
   final int year;
 
   WeeklyData({
@@ -13,6 +16,7 @@ class WeeklyData {
     required this.month,
     required this.week,
     required this.year,
+    d,
   });
 
   Map<String, dynamic> toMap() {
