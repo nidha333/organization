@@ -1,0 +1,27 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:organization/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Supabase.initialize(
+    url: 'https://zsjiisbhuyojylybvayu.supabase.co',
+    anonKey:
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inpzamlpc2JodXlvanlseWJ2YXl1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQzMjYxMjQsImV4cCI6MjA2OTkwMjEyNH0.OIse_D0uQGGi_XATw8a-ELOMzPni_jRH644Pmm1RDPo',
+  );
+
+  runApp(ProviderScope(child: const MyApp()));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: DashboardPage(),
+      debugShowCheckedModeBanner: false,
+    );
+  }
+}
