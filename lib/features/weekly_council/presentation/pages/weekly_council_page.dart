@@ -4,7 +4,6 @@ import 'package:organization/common/constants/app_strings.dart';
 import 'package:organization/common/extentions/date_time_extention.dart';
 import 'package:organization/features/weekly_council/application/providers/weekly_council_provider.dart';
 import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
-import 'package:organization/features/weekly_council/domain/enums/week_filtertype.dart';
 import 'package:organization/features/weekly_council/domain/model/filtering_week_model.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council_barchart.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council_flchart.dart';
@@ -19,11 +18,15 @@ class WeeklyCouncilPage extends ConsumerStatefulWidget {
 
 class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
   late FilteringWeekModel selectedWeek;
+  late FilteringWeekModel thisWeek;
+  late FilteringWeekModel lastWeek;
 
   @override
   void initState() {
-    selectedWeek = DateTime.now().getThisWeek();
     super.initState();
+    thisWeek = DateTime.now().getThisWeek();
+    lastWeek = DateTime.now().getLastWeek();
+    selectedWeek = thisWeek;
   }
 
   @override
@@ -36,7 +39,7 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
         backgroundColor: const Color(0xFF2563EB),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _showWeeklyBottomSheet(context, ref),
+        onPressed: () => _showWeeklyBottomSheet(context),
         backgroundColor: const Color(0xFF2563EB),
         child: const Icon(Icons.add),
       ),
@@ -46,7 +49,6 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
             return const Center(child: Text(AppStrings.noRecords));
           }
 
-          // Filter by selected week if selected
           final filteredData = data
               .where(
                 (e) =>
@@ -63,7 +65,7 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
               .where((e) => e.status == MeetingStatus.notDone)
               .length;
           final noResponseCount = filteredData
-              .where((e) => e.status == MeetingStatus.noRsponse) // Fixed typo
+              .where((e) => e.status == MeetingStatus.noRsponse)
               .length;
 
           return SingleChildScrollView(
@@ -72,55 +74,9 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
               child: Column(
                 children: [
                   const SizedBox(height: 20),
-                  _buildWeekFilterDropdown(ref),
+                  _buildWeekToggleButtons(),
                   const SizedBox(height: 20),
-                  SizedBox(
-                    width: double.infinity,
-                    child: Card(
-                      elevation: 4,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: DataTable(
-                            headingRowColor: WidgetStateColor.resolveWith(
-                              (_) => Colors.blue.shade100,
-                            ),
-                            headingTextStyle: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            columns: const [
-                              DataColumn(label: Text(AppStrings.area)),
-                              DataColumn(label: Text(AppStrings.status)),
-                              DataColumn(label: Text(AppStrings.percentage)),
-                              DataColumn(label: Text(AppStrings.year)),
-                              DataColumn(label: Text(AppStrings.month)),
-                              DataColumn(label: Text(AppStrings.week)),
-                            ],
-                            rows: filteredData.map((item) {
-                              return DataRow(
-                                color: WidgetStateProperty.all(
-                                  item.status.color.withValues(alpha: 0.1),
-                                ),
-                                cells: [
-                                  DataCell(Text(item.area)),
-                                  DataCell(Text(item.status.value)),
-                                  DataCell(Text(item.percentage.toString())),
-                                  DataCell(Text(item.year.toString())),
-                                  DataCell(Text(item.month.name)),
-                                  DataCell(Text(item.week.name)),
-                                ],
-                              );
-                            }).toList(),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                  _buildDataTable(filteredData),
                   const SizedBox(height: 20),
                   PieChartSample3(
                     doneCount: doneCount,
@@ -144,7 +100,6 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _buildWeekFilterDropdown(ref),
                 ],
               ),
             ),
@@ -156,47 +111,90 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
     );
   }
 
-  Widget _buildWeekFilterDropdown(WidgetRef ref) {
+  Widget _buildWeekToggleButtons() {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        DropdownButton<FilteringWeekModel>(
-          value: selectedWeek,
-          onChanged: (FilteringWeekModel? newValue) {
-            if (newValue != null) {}
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              selectedWeek = thisWeek;
+            });
           },
-          items: [
-            DropdownMenuItem(
-              child: Text('This Week'),
-              onTap: () {
-                setState(() {
-                  selectedWeek = DateTime.now().getThisWeek();
-                });
-              },
-            ),
-            DropdownMenuItem(
-              child: Text('Last Week'),
-              onTap: () {
-                setState(() {
-                  selectedWeek = DateTime.now().getLastWeek();
-                });
-              },
-            ),
-            DropdownMenuItem(
-              child: Text('Custom'),
-              onTap: () {
-                // TODO : show WeekSelectionDialog
-                // get the custom week model
-                // apply to filteringModel sate variable inside setState
-              },
-            ),
-          ],
+          style: ElevatedButton.styleFrom(
+            backgroundColor: selectedWeek == thisWeek
+                ? const Color(0xFF2563EB)
+                : Colors.grey.shade300,
+          ),
+          child: const Text('This Week'),
+        ),
+        const SizedBox(width: 10),
+        ElevatedButton(
+          onPressed: () {
+            setState(() {
+              selectedWeek = lastWeek;
+            });
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: selectedWeek == lastWeek
+                ? const Color(0xFF2563EB)
+                : Colors.grey.shade300,
+          ),
+          child: const Text('Last Week'),
         ),
       ],
     );
   }
 
-  void _showWeeklyBottomSheet(BuildContext context, WidgetRef ref) {
+  Widget _buildDataTable(List filteredData) {
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        elevation: 4,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: DataTable(
+              headingRowColor: WidgetStateColor.resolveWith(
+                (_) => Colors.blue.shade100,
+              ),
+              headingTextStyle: const TextStyle(
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+              columns: const [
+                DataColumn(label: Text(AppStrings.area)),
+                DataColumn(label: Text(AppStrings.status)),
+                DataColumn(label: Text(AppStrings.percentage)),
+                DataColumn(label: Text(AppStrings.year)),
+                DataColumn(label: Text(AppStrings.month)),
+                DataColumn(label: Text(AppStrings.week)),
+              ],
+              rows: filteredData.map<DataRow>((item) {
+                return DataRow(
+                  color: WidgetStateProperty.all(
+                    item.status.color.withOpacity(0.13),
+                  ),
+                  cells: [
+                    DataCell(Text(item.area)),
+                    DataCell(Text(item.status.value)),
+                    DataCell(Text(item.percentage.toString())),
+                    DataCell(Text(item.year.toString())),
+                    DataCell(Text(item.month.name)),
+                    DataCell(Text(item.week.name)),
+                  ],
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showWeeklyBottomSheet(BuildContext context) {
     showModalBottomSheet(
       isScrollControlled: true,
       context: context,
