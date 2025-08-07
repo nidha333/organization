@@ -2,32 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/common/data/areas.dart';
 import 'package:organization/features/weekly_council/application/providers/weekly_council_provider.dart';
-import 'package:organization/features/weekly_council/domain/enums/months.dart';
-import 'package:organization/features/weekly_council/domain/enums/status.dart';
-import 'package:organization/features/weekly_council/domain/enums/week.dart';
+import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/status_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/week_enum.dart';
 import 'package:organization/features/weekly_council/domain/model/weekly_council_model.dart';
 
 // ignore: must_be_immutable
 class WeeklyFormWidget extends ConsumerWidget {
   WeeklyFormWidget({super.key});
 
-  // final List<String> statusOptions = ['Done', 'Not Done', 'No Response'];
-  int selectedYear = 2025;
-  Months selectedMonth = Months.january;
+  final int selectedYear = 2025;
+  MonthsEnum selectedMonth = MonthsEnum.january;
   MonthlyWeeks selectedWeek = MonthlyWeeks.week1;
 
   @override
-  Widget build(BuildContext context, ref) {
-    // tracking area meeting status
-    List<String> selectedStatusList = List.generate(
+  Widget build(BuildContext context, WidgetRef ref) {
+    List<MeetingStatus> selectedStatusList = List.generate(
       areaList.length,
-      (_) => MeetingStatus.values[0].toString(),
+      (_) => MeetingStatus.done,
     );
 
-    //tracking area's participation percentage
     List<TextEditingController> percentageControllers = List.generate(
       areaList.length,
-      (_) => TextEditingController(),
+      (_) => TextEditingController(text: '0'),
     );
 
     return Padding(
@@ -57,22 +54,15 @@ class WeeklyFormWidget extends ConsumerWidget {
                           )
                           .toList(),
                       onChanged: (val) {
-                        if (val != null) {
-                          setSheetState(() {
-                            selectedYear = val;
-                          });
-                        }
+                        // Year is final; not changeable here
                       },
                     ),
-                    DropdownButton<Months>(
+                    DropdownButton<MonthsEnum>(
                       value: selectedMonth,
-                      hint: const Text('Select Month'),
-                      items: Months.values
+                      items: MonthsEnum.values
                           .map(
-                            (m) => DropdownMenuItem(
-                              value: m,
-                              child: Text(m.toString()),
-                            ),
+                            (m) =>
+                                DropdownMenuItem(value: m, child: Text(m.name)),
                           )
                           .toList(),
                       onChanged: (val) {
@@ -85,13 +75,10 @@ class WeeklyFormWidget extends ConsumerWidget {
                     ),
                     DropdownButton<MonthlyWeeks>(
                       value: selectedWeek,
-                      hint: const Text('Select Week'),
                       items: MonthlyWeeks.values
                           .map(
-                            (w) => DropdownMenuItem(
-                              value: w,
-                              child: Text(w.toString()),
-                            ),
+                            (w) =>
+                                DropdownMenuItem(value: w, child: Text(w.name)),
                           )
                           .toList(),
                       onChanged: (val) {
@@ -111,8 +98,8 @@ class WeeklyFormWidget extends ConsumerWidget {
                     horizontal: 16,
                     vertical: 10,
                   ),
-                  child: Row(
-                    children: const [
+                  child: const Row(
+                    children: [
                       Expanded(
                         flex: 3,
                         child: Text(
@@ -154,20 +141,22 @@ class WeeklyFormWidget extends ConsumerWidget {
                             Expanded(flex: 3, child: Text(areaList[i])),
                             Expanded(
                               flex: 4,
-                              child: DropdownButtonFormField<String>(
+                              child: DropdownButtonFormField<MeetingStatus>(
                                 value: selectedStatusList[i],
                                 items: MeetingStatus.values
                                     .map(
                                       (status) => DropdownMenuItem(
-                                        value: status.toString(),
-                                        child: Text(status.toString()),
+                                        value: status,
+                                        child: Text(status.value),
                                       ),
                                     )
                                     .toList(),
                                 onChanged: (val) {
-                                  setSheetState(() {
-                                    selectedStatusList[i] = val!;
-                                  });
+                                  if (val != null) {
+                                    setSheetState(() {
+                                      selectedStatusList[i] = val;
+                                    });
+                                  }
                                 },
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
@@ -197,20 +186,30 @@ class WeeklyFormWidget extends ConsumerWidget {
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
-                    onPressed: () async {
+                    onPressed: () {
                       final List<WeeklyData> weekListData = [];
+
                       for (var i = 0; i < areaList.length; i++) {
-                        final w = WeeklyData(
+                        final percentText = percentageControllers[i].text;
+                        if (percentText.isEmpty) continue;
+
+                        final percentage = int.tryParse(percentText);
+                        if (percentage == null) continue;
+
+                        final data = WeeklyData(
                           area: areaList[i],
                           status: selectedStatusList[i],
-                          percentage: int.parse(percentageControllers[i].text),
+                          percentage: percentage,
                           month: selectedMonth,
                           week: selectedWeek,
                           year: selectedYear,
                         );
-                        weekListData.add(w);
+
+                        weekListData.add(data);
                       }
+
                       ref.read(saveWeeklyCouncilProvider(weekListData));
+                      Navigator.pop(context);
                     },
                     child: const Text('Insert'),
                   ),

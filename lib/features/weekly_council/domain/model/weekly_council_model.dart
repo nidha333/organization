@@ -1,11 +1,12 @@
-import 'package:organization/features/weekly_council/domain/enums/months.dart';
-import 'package:organization/features/weekly_council/domain/enums/week.dart';
+import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/status_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/week_enum.dart';
 
 class WeeklyData {
   final String area;
-  final String status;
+  final MeetingStatus status;
   final int percentage;
-  final Months month;
+  final MonthsEnum month;
   final MonthlyWeeks week;
   final int year;
 
@@ -16,17 +17,27 @@ class WeeklyData {
     required this.month,
     required this.week,
     required this.year,
-    d,
   });
 
   Map<String, dynamic> toMap() {
     return {
       'area': area,
-      'status': status,
+      'status': status.toMap(),
       'percentage': percentage,
-      'month': month,
-      'week': week,
+      'month': month.toMap(),
+      'week': week.toMap(),
       'year': year,
     };
+  }
+
+  factory WeeklyData.fromMap(Map<String, dynamic> map) {
+    return WeeklyData(
+      area: map['area'] ?? '',
+      status: MeetingStatus.fromMap(map['status']),
+      percentage: map['percentage'] ?? 0,
+      month: MonthsEnum.fromMap(map['month']),
+      week: MonthlyWeeks.fromMap(map['week']),
+      year: map['year'] ?? 0,
+    );
   }
 }

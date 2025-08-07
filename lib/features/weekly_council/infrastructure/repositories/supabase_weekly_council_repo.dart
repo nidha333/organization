@@ -9,9 +9,7 @@ class SupabaseWeeklyDataRepo {
   Future<bool> saveWeeklyData(List<WeeklyData> weeklyDataList) async {
     try {
       for (var i = 0; i < weeklyDataList.length; i++) {
-        await _client.from('weekly_council').insert({
-          weeklyDataList[i].toMap(),
-        });
+        await _client.from('weekly_council').insert(weeklyDataList[i].toMap());
       }
       // ignore: use_build_context_synchronously
 
