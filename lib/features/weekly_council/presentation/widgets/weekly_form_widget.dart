@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/common/data/areas.dart';
 import 'package:organization/features/weekly_council/application/providers/weekly_council_provider.dart';
 import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
-import 'package:organization/features/weekly_council/domain/enums/status_enum.dart';
-import 'package:organization/features/weekly_council/domain/enums/week_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/weeks_enum.dart';
 import 'package:organization/features/weekly_council/domain/model/weekly_council_model.dart';
 
 // ignore: must_be_immutable

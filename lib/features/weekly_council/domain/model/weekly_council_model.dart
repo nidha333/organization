@@ -1,6 +1,6 @@
 import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
-import 'package:organization/features/weekly_council/domain/enums/status_enum.dart';
-import 'package:organization/features/weekly_council/domain/enums/week_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
+import 'package:organization/features/weekly_council/domain/enums/weeks_enum.dart';
 
 class WeeklyData {
   final String area;

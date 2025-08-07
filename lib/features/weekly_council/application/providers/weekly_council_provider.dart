@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:organization/features/weekly_council/domain/enums/week_enum.dart';
+import 'package:organization/common/extentions/date_time_extention.dart';
+import 'package:organization/features/weekly_council/domain/enums/week_filtertype.dart';
+import 'package:organization/features/weekly_council/domain/enums/weeks_enum.dart';
 import 'package:organization/features/weekly_council/domain/model/weekly_council_model.dart';
 import 'package:organization/features/weekly_council/infrastructure/repositories/supabase_weekly_council_repo.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
@@ -16,8 +18,6 @@ final weeklyCouncilResultProvider = FutureProvider<List<WeeklyData>>((
       .map((e) => WeeklyData.fromMap(e as Map<String, dynamic>))
       .toList();
 });
-
-final selectedWeekFilterProvider = StateProvider<MonthlyWeeks?>((ref) => null);
 
 final saveWeeklyCouncilProvider = FutureProvider.family<bool, List<WeeklyData>>(
   (ref, weeklyDataList) async {

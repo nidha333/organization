@@ -30,4 +30,8 @@ enum MonthsEnum {
       orElse: () => MonthsEnum.january,
     );
   }
+
+  static MonthsEnum getMonthFromInt(int num) {
+    return MonthsEnum.values[num - 1];
+  }
 }
