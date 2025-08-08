@@ -7,43 +7,80 @@ class PieChartSample3 extends StatefulWidget {
   final int noResponseCount;
 
   const PieChartSample3({
-    super.key,
+    Key? key,
     required this.doneCount,
     required this.notDoneCount,
     required this.noResponseCount,
-  });
+  }) : super(key: key);
 
   @override
-  State<PieChartSample3> createState() => _PieChartSample3State();
+  State<StatefulWidget> createState() => PieChartSample3State();
 }
 
-class _PieChartSample3State extends State<PieChartSample3> {
+class PieChartSample3State extends State<PieChartSample3> {
   int touchedIndex = -1;
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      width: 300,
-      height: 300,
-      child: PieChart(
-        PieChartData(
-          pieTouchData: PieTouchData(
-            touchCallback: (event, response) {
-              setState(() {
-                if (!event.isInterestedForInteractions ||
-                    response == null ||
-                    response.touchedSection == null) {
-                  touchedIndex = -1;
-                  return;
-                }
-                touchedIndex = response.touchedSection!.touchedSectionIndex;
-              });
-            },
-          ),
-          borderData: FlBorderData(show: false),
-          sectionsSpace: 2,
-          centerSpaceRadius: 0,
-          sections: showingSections(),
+    final total =
+        widget.doneCount + widget.notDoneCount + widget.noResponseCount;
+
+    return AspectRatio(
+      aspectRatio: 1.3,
+      child: Card(
+        color: Colors.white,
+        child: Column(
+          children: <Widget>[
+            const SizedBox(height: 28),
+            const Text(
+              'Current Week Status',
+              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 18),
+            Expanded(
+              child: PieChart(
+                PieChartData(
+                  pieTouchData: PieTouchData(
+                    touchCallback: (event, response) {
+                      // Use post frame callback to avoid Flutter Web assertion error
+                      WidgetsBinding.instance.addPostFrameCallback((_) {
+                        setState(() {
+                          if (!event.isInterestedForInteractions ||
+                              response == null ||
+                              response.touchedSection == null) {
+                            touchedIndex = -1;
+                          } else {
+                            touchedIndex =
+                                response.touchedSection!.touchedSectionIndex;
+                          }
+                        });
+                      });
+                    },
+                  ),
+                  borderData: FlBorderData(show: false),
+                  sectionsSpace: 2,
+                  centerSpaceRadius: 50,
+                  sections: showingSections(),
+                ),
+              ),
+            ),
+            const SizedBox(height: 10),
+            // Add legend
+            Wrap(
+              spacing: 12,
+              runSpacing: 6,
+              alignment: WrapAlignment.center,
+              children: [
+                legendItem(Colors.green, 'Done (${widget.doneCount})'),
+                legendItem(Colors.red, 'Not Done (${widget.notDoneCount})'),
+                legendItem(
+                  Colors.grey,
+                  'No Response (${widget.noResponseCount})',
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+          ],
         ),
       ),
     );
@@ -54,43 +91,71 @@ class _PieChartSample3State extends State<PieChartSample3> {
         widget.doneCount + widget.notDoneCount + widget.noResponseCount;
 
     if (total == 0) {
-      return [];
+      return [
+        PieChartSectionData(
+          color: Colors.grey[300],
+          value: 1,
+          title: 'No Data',
+          radius: 60,
+          titleStyle: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.black,
+          ),
+        ),
+      ];
     }
 
-    return [
-      PieChartSectionData(
-        color: const Color.fromARGB(255, 115, 197, 157),
-        value: widget.doneCount.toDouble(),
-        title: '${((widget.doneCount / total) * 100).toInt()}%',
-        radius: touchedIndex == 0 ? 110 : 100,
+    return List.generate(3, (i) {
+      final isTouched = i == touchedIndex;
+      final double radius = isTouched ? 70 : 60;
+      double percentage = 0;
+      Color color;
+      String label;
+
+      switch (i) {
+        case 0:
+          percentage = (widget.doneCount / total) * 100;
+          color = Colors.green;
+          label = '${percentage.toStringAsFixed(1)}%';
+          break;
+        case 1:
+          percentage = (widget.notDoneCount / total) * 100;
+          color = Colors.red;
+          label = '${percentage.toStringAsFixed(1)}%';
+          break;
+        case 2:
+          percentage = (widget.noResponseCount / total) * 100;
+          color = Colors.grey;
+          label = '${percentage.toStringAsFixed(1)}%';
+          break;
+        default:
+          color = Colors.transparent;
+          label = '';
+      }
+
+      return PieChartSectionData(
+        color: color,
+        value: percentage,
+        title: label,
+        radius: radius,
         titleStyle: const TextStyle(
+          fontSize: 16,
           fontWeight: FontWeight.bold,
           color: Colors.white,
-          fontSize: 16,
         ),
-      ),
-      PieChartSectionData(
-        color: const Color.fromARGB(255, 238, 128, 128),
-        value: widget.notDoneCount.toDouble(),
-        title: '${((widget.notDoneCount / total) * 100).toInt()}%',
-        radius: touchedIndex == 1 ? 110 : 100,
-        titleStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontSize: 16,
-        ),
-      ),
-      PieChartSectionData(
-        color: const Color.fromARGB(255, 170, 168, 168),
-        value: widget.noResponseCount.toDouble(),
-        title: '${((widget.noResponseCount / total) * 100).toInt()}%',
-        radius: touchedIndex == 2 ? 110 : 100,
-        titleStyle: const TextStyle(
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-          fontSize: 16,
-        ),
-      ),
-    ];
+      );
+    });
+  }
+
+  Widget legendItem(Color color, String text) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Container(width: 12, height: 12, color: color),
+        const SizedBox(width: 4),
+        Text(text, style: const TextStyle(fontSize: 14)),
+      ],
+    );
   }
 }

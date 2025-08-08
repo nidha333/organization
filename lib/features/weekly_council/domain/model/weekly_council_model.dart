@@ -19,6 +19,7 @@ class WeeklyData {
     required this.year,
   });
 
+  /// Convert to map for Supabase
   Map<String, dynamic> toMap() {
     return {
       'area': area,
@@ -30,13 +31,14 @@ class WeeklyData {
     };
   }
 
+  /// Create from Supabase record
   factory WeeklyData.fromMap(Map<String, dynamic> map) {
     return WeeklyData(
       area: map['area'] ?? '',
       status: MeetingStatus.fromMap(map['status']),
       percentage: map['percentage'] ?? 0,
-      month: MonthsEnum.fromMap(map['month']),
-      week: MonthlyWeeks.fromMap(map['week']),
+      month: MonthsEnum.fromMap(map['month']?.toString() ?? ''),
+      week: MonthlyWeeks.fromMap(map['week']?.toString() ?? ''),
       year: map['year'] ?? 0,
     );
   }

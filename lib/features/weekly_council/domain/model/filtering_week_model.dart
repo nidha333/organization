@@ -11,21 +11,4 @@ class FilteringWeekModel {
     required this.month,
     required this.week,
   });
-
-  @override
-  bool operator ==(Object other) {
-    if (identical(this, other)) return true;
-
-    return other is FilteringWeekModel &&
-        other.year == year &&
-        other.month == month &&
-        other.week == week;
-  }
-
-  @override
-  int get hashCode => year.hashCode ^ month.hashCode ^ week.hashCode;
-
-  @override
-  String toString() =>
-      'FilteringWeekModel(year: $year, month: $month, week: $week)';
 }
