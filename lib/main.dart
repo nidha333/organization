@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/features/dashboard/presentation/pages/dashboard_page.dart';
+import 'package:organization/features/weekly_council/presentation/pages/testuipage.dart';
+import 'package:organization/features/weekly_council/presentation/pages/weekly_council_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() async {
@@ -20,7 +22,17 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: DashboardPage(),
+      home: WeeklyCouncilPage(),
+      theme: ThemeData(
+        brightness: Brightness.dark,
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadiusGeometry.circular(10),
+            ),
+          ),
+        ),
+      ),
       debugShowCheckedModeBanner: false,
     );
   }

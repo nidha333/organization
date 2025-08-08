@@ -26,62 +26,57 @@ class PieChartSample3State extends State<PieChartSample3> {
         widget.doneCount + widget.notDoneCount + widget.noResponseCount;
 
     return AspectRatio(
-      aspectRatio: 1.3,
-      child: Card(
-        color: Colors.white,
-        child: Column(
-          children: <Widget>[
-            const SizedBox(height: 28),
-            const Text(
-              'Current Week Status',
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 18),
-            Expanded(
-              child: PieChart(
-                PieChartData(
-                  pieTouchData: PieTouchData(
-                    touchCallback: (event, response) {
-                      // Use post frame callback to avoid Flutter Web assertion error
-                      WidgetsBinding.instance.addPostFrameCallback((_) {
-                        setState(() {
-                          if (!event.isInterestedForInteractions ||
-                              response == null ||
-                              response.touchedSection == null) {
-                            touchedIndex = -1;
-                          } else {
-                            touchedIndex =
-                                response.touchedSection!.touchedSectionIndex;
-                          }
-                        });
+      aspectRatio: 1.9,
+      child: Column(
+        children: <Widget>[
+          const Text(
+            'Current Week Status',
+            style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+          ),
+
+          Expanded(
+            child: PieChart(
+              PieChartData(
+                pieTouchData: PieTouchData(
+                  touchCallback: (event, response) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      setState(() {
+                        if (!event.isInterestedForInteractions ||
+                            response == null ||
+                            response.touchedSection == null) {
+                          touchedIndex = -1;
+                        } else {
+                          touchedIndex =
+                              response.touchedSection!.touchedSectionIndex;
+                        }
                       });
-                    },
-                  ),
-                  borderData: FlBorderData(show: false),
-                  sectionsSpace: 2,
-                  centerSpaceRadius: 50,
-                  sections: showingSections(),
+                    });
+                  },
                 ),
+                borderData: FlBorderData(show: false),
+                sectionsSpace: 2,
+                centerSpaceRadius: 40,
+                sections: showingSections(),
               ),
             ),
-            const SizedBox(height: 10),
-            // Add legend
-            Wrap(
-              spacing: 12,
-              runSpacing: 6,
-              alignment: WrapAlignment.center,
-              children: [
-                legendItem(Colors.green, 'Done (${widget.doneCount})'),
-                legendItem(Colors.red, 'Not Done (${widget.notDoneCount})'),
-                legendItem(
-                  Colors.grey,
-                  'No Response (${widget.noResponseCount})',
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-          ],
-        ),
+          ),
+
+          // Add legend
+          Wrap(
+            spacing: 12,
+            runSpacing: 6,
+            alignment: WrapAlignment.center,
+            children: [
+              legendItem(Colors.green, 'Done (${widget.doneCount})'),
+              legendItem(Colors.red, 'Not Done (${widget.notDoneCount})'),
+              legendItem(
+                Colors.grey,
+                'No Response (${widget.noResponseCount})',
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+        ],
       ),
     );
   }
