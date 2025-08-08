@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/common/constants/app_colors.dart';
 import 'package:organization/common/constants/app_strings.dart';
 import 'package:organization/common/extentions/date_time_extention.dart';
+import 'package:organization/common/widgets/appbar.dart';
 import 'package:organization/features/weekly_council/application/providers/weekly_council_provider.dart';
 import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
 import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
@@ -12,6 +13,7 @@ import 'package:organization/features/weekly_council/domain/enums/weeks_enum.dar
 import 'package:organization/features/weekly_council/domain/model/filtering_week_model.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council_barchart.dart';
 import 'package:organization/features/weekly_council/presentation/pages/weekly_council_flchart.dart';
+import 'package:organization/features/weekly_council/presentation/widgets/weekly_datatable.dart';
 import 'package:organization/features/weekly_council/presentation/widgets/weekly_form_widget.dart';
 
 class WeeklyCouncilPage extends ConsumerStatefulWidget {
@@ -36,38 +38,13 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
   Widget build(BuildContext context) {
     final weeklyCouncilResult = ref.watch(weeklyCouncilResultProvider);
 
-    final screenWidth = MediaQuery.of(context).size.width;
-
-    final isNarrowScreen = screenWidth < 900;
-
     final cardBackgroundColor = const Color(0xFF1E293B);
     final cardPadding = const EdgeInsets.all(20);
     final cardBorderRadius = BorderRadius.circular(16);
 
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 12, 24, 39),
-      appBar: AppBar(
-        title: Row(
-          children: [
-            IconButton(onPressed: () {}, icon: const Icon(Icons.arrow_back)),
-            const Text(
-              AppStrings.weeklyCouncilTitle,
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-                fontSize: 20,
-                letterSpacing: 0.5,
-              ),
-            ),
-          ],
-        ),
-        backgroundColor: const Color.fromARGB(255, 36, 46, 62),
-        elevation: 10,
-        shadowColor: Colors.black.withOpacity(0.3),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(16)),
-        ),
-        actions: [_buildWeekToggleButtons()],
-      ),
+      appBar: NavBar,
       floatingActionButton: FloatingActionButton(
         onPressed: () => _showWeeklyBottomSheet(context),
         backgroundColor: AppColors.blue3Colors,
@@ -98,90 +75,73 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
             padding: const EdgeInsets.all(20),
             child: Column(
               children: [
-                const SizedBox(height: 30),
-                isNarrowScreen
-                    ? Column(
-                        children: [
-                          _buildCard(
-                            backgroundColor: cardBackgroundColor,
-                            borderRadius: cardBorderRadius,
-                            padding: cardPadding,
-                            child: _buildDataTable(filteredData),
-                          ),
-                          const SizedBox(height: 20),
-                          _buildCard(
-                            backgroundColor: cardBackgroundColor,
-                            borderRadius: cardBorderRadius,
-                            padding: cardPadding,
-                            child: SizedBox(
-                              height: 300,
-                              child: PieChartSample3(
-                                doneCount: doneCount,
-                                notDoneCount: notDoneCount,
-                                noResponseCount: noResponseCount,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 20),
-                          _buildCard(
-                            backgroundColor: cardBackgroundColor,
-                            borderRadius: cardBorderRadius,
-                            padding: cardPadding,
-                            child: SimpleBarChart(
-                              areas: filteredData.map((e) => e.area).toList(),
-                              percentages: filteredData
-                                  .map((e) => e.percentage.toDouble())
-                                  .toList(),
-                            ),
-                          ),
-                        ],
-                      )
-                    : Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Expanded(
-                            flex: 3,
-                            child: _buildCard(
-                              backgroundColor: cardBackgroundColor,
-                              borderRadius: cardBorderRadius,
-                              padding: cardPadding,
-                              child: _buildDataTable(filteredData),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            flex: 2,
-                            child: _buildCard(
-                              backgroundColor: cardBackgroundColor,
-                              borderRadius: cardBorderRadius,
-                              padding: cardPadding,
-                              child: SizedBox(
-                                height: 300,
-                                child: PieChartSample3(
-                                  doneCount: doneCount,
-                                  notDoneCount: notDoneCount,
-                                  noResponseCount: noResponseCount,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 20),
-                          Expanded(
-                            flex: 2,
-                            child: _buildCard(
-                              backgroundColor: cardBackgroundColor,
-                              borderRadius: cardBorderRadius,
-                              padding: cardPadding,
-                              child: SimpleBarChart(
-                                areas: filteredData.map((e) => e.area).toList(),
-                                percentages: filteredData
-                                    .map((e) => e.percentage.toDouble())
-                                    .toList(),
-                              ),
-                            ),
-                          ),
-                        ],
+                Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Row(
+                    children: [
+                      Text(
+                        'Weekly Council',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [_buildWeekToggleButtons()],
+                ),
+
+                const SizedBox(height: 30),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 3,
+                      child: _buildCard(
+                        backgroundColor: cardBackgroundColor,
+                        borderRadius: cardBorderRadius,
+                        padding: cardPadding,
+                        child: buildDataTable(filteredData, selectedWeek),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      flex: 2,
+                      child: _buildCard(
+                        backgroundColor: cardBackgroundColor,
+                        borderRadius: cardBorderRadius,
+                        padding: cardPadding,
+                        child: SizedBox(
+                          height: 300,
+                          child: PieChartSample3(
+                            doneCount: doneCount,
+                            notDoneCount: notDoneCount,
+                            noResponseCount: noResponseCount,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      flex: 2,
+                      child: _buildCard(
+                        backgroundColor: cardBackgroundColor,
+                        borderRadius: cardBorderRadius,
+                        padding: cardPadding,
+                        child: SimpleBarChart(
+                          areas: filteredData.map((e) => e.area).toList(),
+                          percentages: filteredData
+                              .map((e) => e.percentage.toDouble())
+                              .toList(),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           );
@@ -342,85 +302,6 @@ class _WeeklyCouncilPageState extends ConsumerState<WeeklyCouncilPage> {
           child: const Text('Custom'),
         ),
       ],
-    );
-  }
-
-  Widget _buildDataTable(List filteredData) {
-    if (filteredData.isEmpty) {
-      return const Text(
-        "No records for this week",
-        style: TextStyle(color: Colors.white70),
-      );
-    }
-
-    return SizedBox(
-      width: double.infinity,
-      child: SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: DataTable(
-          headingRowColor: MaterialStateColor.resolveWith(
-            (_) => Colors.blue.shade800,
-          ),
-          headingTextStyle: const TextStyle(
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
-            letterSpacing: 1,
-          ),
-          dataRowColor: MaterialStateColor.resolveWith(
-            (states) => Colors.transparent,
-          ),
-          columns: const [
-            DataColumn(label: Text(AppStrings.area)),
-            DataColumn(label: Text(AppStrings.status)),
-            DataColumn(label: Text(AppStrings.percentage)),
-            DataColumn(label: Text(AppStrings.year)),
-            DataColumn(label: Text(AppStrings.month)),
-            DataColumn(label: Text(AppStrings.week)),
-          ],
-          rows: filteredData.map<DataRow>((item) {
-            return DataRow(
-              cells: [
-                DataCell(
-                  Text(
-                    item.area,
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    item.status.value,
-                    style: TextStyle(color: item.status.color),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    item.percentage.toString(),
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    item.year.toString(),
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    item.month.value,
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
-                DataCell(
-                  Text(
-                    (item.week.index + 1).toString(),
-                    style: const TextStyle(color: Colors.white70),
-                  ),
-                ),
-              ],
-            );
-          }).toList(),
-        ),
-      ),
     );
   }
 

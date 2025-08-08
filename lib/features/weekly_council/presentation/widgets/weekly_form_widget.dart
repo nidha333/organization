@@ -89,14 +89,11 @@ class _WeeklyFormWidgetState extends ConsumerState<WeeklyFormWidget> {
     setState(() => _isSaving = true);
 
     try {
-      // Call the save provider and await the result.
       final success = await ref.read(
         saveWeeklyCouncilProvider(weekListData).future,
       );
 
       if (success) {
-        // Provider already invalidates weeklyCouncilResultProvider,
-        // but we also return true to parent as confirmation.
         Navigator.pop(context, true);
       } else {
         ScaffoldMessenger.of(
@@ -118,7 +115,7 @@ class _WeeklyFormWidgetState extends ConsumerState<WeeklyFormWidget> {
       padding: MediaQuery.of(context).viewInsets,
       child: Container(
         height: MediaQuery.of(context).size.height * 0.9,
-        color: Colors.white,
+
         child: Column(
           children: [
             const SizedBox(height: 16),
@@ -165,7 +162,6 @@ class _WeeklyFormWidgetState extends ConsumerState<WeeklyFormWidget> {
             ),
             const SizedBox(height: 16),
             Container(
-              color: const Color(0xFFE2E8F0),
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
               child: const Row(
                 children: [

@@ -22,7 +22,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: WeeklyCouncilPage(),
+      home: DashboardPage(),
       theme: ThemeData(
         brightness: Brightness.dark,
         elevatedButtonTheme: ElevatedButtonThemeData(
