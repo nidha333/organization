@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/common/widgets/appbar.dart';
 import 'package:organization/features/dashboard/presentation/widgets/meeting_card.dart';
+import 'package:organization/features/invitations/presentation/pages/widgets/invitations_list_widget.dart';
 import 'package:organization/features/online_registration/application/providers/online_reg_providers.dart';
 import 'package:organization/features/online_registration/presentation/pages/online_reg_form.dart';
-import 'package:organization/features/seasonalPrograms_list/presentation/pages/seasonal_programs_list_page.dart';
+import 'package:organization/features/online_registration/presentation/widgets/online_reg_list_page.dart';
 
 class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
@@ -64,12 +65,16 @@ class _DashboardPageState extends ConsumerState<DashboardPage> {
                 ),
               ],
             ),
-
+            SizedBox(height: 20),
+            Text(
+              'Seasonal Programs',
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
+            ),
             Expanded(
               child: Row(
                 children: [
                   Expanded(child: SeasonalProgramsListPage()),
-                  Expanded(child: SeasonalProgramsListPage()),
+                  Expanded(child: InvitationsListWidget()),
                 ],
               ),
             ),
