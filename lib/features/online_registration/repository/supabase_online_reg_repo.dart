@@ -1,43 +1,43 @@
 import 'package:organization/features/online_registration/domain/models/online_reg_model.dart';
 
-List<OnlineRegModel> onlineData = [];
+List<OnlineRegModel> onlineData = [
+  OnlineRegModel(
+    id: '1',
+    programName: 'Doctors meet',
+    programDate: DateTime.now(),
+    regStartDate: DateTime.now(),
+    regEndDate: DateTime.now(),
+    dataByHand: 'Yes',
+    registeredCount: 10,
+    confirmedCount: 5,
+    messaged: 3,
+    reminded: 2,
+    notSure: 1,
+    notComing: 0,
+    remarks: 'Remarks 1',
+  ),
+  OnlineRegModel(
+    id: '1',
+    programName: 'Tea Party @ Manjeri',
+    programDate: DateTime.now(),
+    regStartDate: DateTime.now(),
+    regEndDate: DateTime.now(),
+    dataByHand: 'Yes',
+    registeredCount: 10,
+    confirmedCount: 5,
+    messaged: 3,
+    reminded: 2,
+    notSure: 1,
+    notComing: 0,
+    remarks: 'Remarks 1',
+  ),
+];
 
 class SupabaseOnlineRegRepo {
   // final SupabaseClient _client = Supabase.instance.client;
 
   Future<List<OnlineRegModel>> getOnlineRegPrograms() async {
-    return [
-      OnlineRegModel(
-        id: '1',
-        programName: 'Doctors meet',
-        programDate: DateTime.now(),
-        regStartDate: DateTime.now(),
-        regEndDate: DateTime.now(),
-        dataByHand: 'Yes',
-        registeredCount: 10,
-        confirmedCount: 5,
-        messaged: 3,
-        reminded: 2,
-        notSure: 1,
-        notComing: 0,
-        remarks: 'Remarks 1',
-      ),
-      OnlineRegModel(
-        id: '1',
-        programName: 'Tea Party @ Manjeri',
-        programDate: DateTime.now(),
-        regStartDate: DateTime.now(),
-        regEndDate: DateTime.now(),
-        dataByHand: 'Yes',
-        registeredCount: 10,
-        confirmedCount: 5,
-        messaged: 3,
-        reminded: 2,
-        notSure: 1,
-        notComing: 0,
-        remarks: 'Remarks 1',
-      ),
-    ];
+    return onlineData;
   }
 
   Future<bool> createOnlineReg(OnlineRegModel model) async {

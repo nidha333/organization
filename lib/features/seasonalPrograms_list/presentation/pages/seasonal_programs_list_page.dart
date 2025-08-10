@@ -23,10 +23,8 @@ class SeasonalProgramsListPageState extends ConsumerState<SeasonalProgramsListPa
       appBar: AppBar(title: const Text('Seasonal Programs List')),
       body: onlinePrograms.when(
         data: (data) {
-          return ListView.builder(
-            itemCount: data.length,
-            itemBuilder: (context, index) {
-              final program = data[index];
+          return Column(
+            children: data.map((program) {
               return Container(
                 padding: const EdgeInsets.all(20),
                 margin: const EdgeInsets.all(20),
@@ -104,7 +102,7 @@ class SeasonalProgramsListPageState extends ConsumerState<SeasonalProgramsListPa
                   ),
                 ),
               );
-            },
+            }).toList(),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
