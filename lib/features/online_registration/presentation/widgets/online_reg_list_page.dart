@@ -64,6 +64,13 @@ class SeasonalProgramsListPageState extends ConsumerState<SeasonalProgramsListPa
                     const SizedBox(width: 16),
                     Column(
                       children: [
+                        Text('Target'),
+                        Text(program.targetCount.toString(), style: TextStyle(fontSize: 30, color: Colors.green)),
+                      ],
+                    ),
+                    const SizedBox(width: 16),
+                    Column(
+                      children: [
                         Text('Confirmed'),
                         Text(program.confirmedCount.toString(), style: TextStyle(fontSize: 30)),
                       ],

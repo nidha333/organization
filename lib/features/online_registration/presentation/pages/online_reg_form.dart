@@ -26,6 +26,7 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
   final _notSureController = TextEditingController();
   final _notComingController = TextEditingController();
   final _remarksController = TextEditingController();
+  final _targetCountController = TextEditingController();
 
   DateTime? _programDate;
   DateTime? _regStartDate;
@@ -50,6 +51,7 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
       _notSureController.text = data.notSure.toString();
       _notComingController.text = data.notComing.toString();
       _remarksController.text = data.remarks;
+      _targetCountController.text = data.targetCount.toString();
 
       _programDate = data.programDate;
       _regStartDate = data.regStartDate;
@@ -63,6 +65,7 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
       _notSureController.text = '0';
       _notComingController.text = '0';
       _dataByHandController.text = 'No';
+      _targetCountController.text = '0';
     }
   }
 
@@ -77,6 +80,7 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
     _notSureController.dispose();
     _notComingController.dispose();
     _remarksController.dispose();
+    _targetCountController.dispose();
     super.dispose();
   }
 
@@ -98,7 +102,7 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
       return;
     }
 
-    if (_programDate == null) {
+    if (_programDate == null || _targetCountController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please select all required dates')));
       return;
     }
@@ -114,6 +118,7 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
         programDate: _programDate!,
         regStartDate: _regStartDate!,
         regEndDate: _regEndDate!,
+        targetCount: int.parse(_targetCountController.text),
         dataByHand: _dataByHandController.text,
         registeredCount: int.parse(_registeredCountController.text),
         confirmedCount: int.parse(_confirmedCountController.text),
@@ -252,6 +257,25 @@ class _OnlineRegFormState extends ConsumerState<OnlineRegForm> {
                             Expanded(
                               child: Column(
                                 children: [
+                                  // Target Count
+                                  TextFormField(
+                                    controller: _targetCountController,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Target Count',
+                                      prefixIcon: Icon(Icons.people),
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    keyboardType: TextInputType.number,
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Required';
+                                      }
+                                      if (int.tryParse(value) == null) {
+                                        return 'Enter a number';
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                   // Registered Count
                                   TextFormField(
                                     controller: _registeredCountController,

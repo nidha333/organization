@@ -8,6 +8,7 @@ class OnlineRegModel {
   final DateTime? regStartDate;
   final DateTime? regEndDate;
   final String dataByHand;
+  final int targetCount;
   final int registeredCount;
   final int confirmedCount;
   final int messaged;
@@ -22,6 +23,7 @@ class OnlineRegModel {
     this.regStartDate,
     this.regEndDate,
     required this.dataByHand,
+    required this.targetCount,
     required this.registeredCount,
     required this.confirmedCount,
     required this.messaged,
@@ -38,6 +40,7 @@ class OnlineRegModel {
     DateTime? regStartDate,
     DateTime? regEndDate,
     String? dataByHand,
+    int? targetCount,
     int? registeredCount,
     int? confirmedCount,
     int? messaged,
@@ -53,6 +56,7 @@ class OnlineRegModel {
       regStartDate: regStartDate ?? this.regStartDate,
       regEndDate: regEndDate ?? this.regEndDate,
       dataByHand: dataByHand ?? this.dataByHand,
+      targetCount: targetCount ?? this.targetCount,
       registeredCount: registeredCount ?? this.registeredCount,
       confirmedCount: confirmedCount ?? this.confirmedCount,
       messaged: messaged ?? this.messaged,
@@ -71,6 +75,7 @@ class OnlineRegModel {
       'regStartDate': regStartDate?.millisecondsSinceEpoch,
       'regEndDate': regEndDate?.millisecondsSinceEpoch,
       'dataByHand': dataByHand,
+      'targetCount': targetCount,
       'registeredCount': registeredCount,
       'confirmedCount': confirmedCount,
       'messaged': messaged,
@@ -89,6 +94,7 @@ class OnlineRegModel {
       regStartDate: map['regStartDate'] != null ? DateTime.fromMillisecondsSinceEpoch(map['regStartDate'] as int) : null,
       regEndDate: map['regEndDate'] != null ? DateTime.fromMillisecondsSinceEpoch(map['regEndDate'] as int) : null,
       dataByHand: map['dataByHand'] as String,
+      targetCount: map['targetCount'] as int,
       registeredCount: map['registeredCount'] as int,
       confirmedCount: map['confirmedCount'] as int,
       messaged: map['messaged'] as int,
@@ -118,6 +124,7 @@ class OnlineRegModel {
         other.regStartDate == regStartDate &&
         other.regEndDate == regEndDate &&
         other.dataByHand == dataByHand &&
+        other.targetCount == targetCount &&
         other.registeredCount == registeredCount &&
         other.confirmedCount == confirmedCount &&
         other.messaged == messaged &&
@@ -135,6 +142,7 @@ class OnlineRegModel {
         regStartDate.hashCode ^
         regEndDate.hashCode ^
         dataByHand.hashCode ^
+        targetCount.hashCode ^
         registeredCount.hashCode ^
         confirmedCount.hashCode ^
         messaged.hashCode ^
