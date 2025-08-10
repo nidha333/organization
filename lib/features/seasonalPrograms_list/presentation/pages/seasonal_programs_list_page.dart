@@ -37,21 +37,25 @@ class SeasonalProgramsListPageState extends ConsumerState<SeasonalProgramsListPa
                   border: Border.all(color: Colors.yellow.withValues(alpha: .5)),
                 ),
                 child: ListTile(
-                  title: Row(
-                    children: [
-                      Text(
-                        '${program.programName} ',
-                        style: const TextStyle(color: Colors.black, fontSize: 26, fontWeight: FontWeight.bold),
-                      ),
-                      Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-                        decoration: BoxDecoration(color: Colors.yellow.withValues(alpha: .5), borderRadius: BorderRadius.circular(16)),
-                        child: Text(
-                          DateFormat('dd MMMM yyyy').format(program.programDate),
-                          style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+                  title: Container(
+                    margin: const EdgeInsets.only(bottom: 26),
+                    child: Row(
+                      children: [
+                        Text(
+                          '${program.programName} ',
+                          style: const TextStyle(color: Colors.black, fontSize: 24, fontWeight: FontWeight.bold),
                         ),
-                      ),
-                    ],
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+
+                          decoration: BoxDecoration(color: Colors.yellow.withValues(alpha: .5), borderRadius: BorderRadius.circular(16)),
+                          child: Text(
+                            DateFormat('dd MMMM yyyy').format(program.programDate),
+                            style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.bold),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                   subtitle: Row(
                     children: [
