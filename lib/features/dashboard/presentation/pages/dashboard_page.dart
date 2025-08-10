@@ -1,16 +1,32 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:organization/common/widgets/appbar.dart';
-import 'package:organization/features/dashboard/presentation/widgets/appbar_info_widget.dart';
 import 'package:organization/features/dashboard/presentation/widgets/meeting_card.dart';
+import 'package:organization/features/online_registration/application/providers/online_reg_providers.dart';
+import 'package:organization/features/online_registration/presentation/pages/online_reg_form.dart';
+import 'package:organization/features/seasonalPrograms_list/presentation/pages/seasonal_programs_list_page.dart';
 
-class DashboardPage extends StatelessWidget {
+class DashboardPage extends ConsumerStatefulWidget {
   const DashboardPage({super.key});
 
   @override
+  ConsumerState<DashboardPage> createState() => _DashboardPageState();
+}
+
+class _DashboardPageState extends ConsumerState<DashboardPage> {
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
       appBar: NavBar,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await showAddNewProgramDialog(context).then((value) {
+            ref.invalidate(getOnlineRegProvider);
+            setState(() {});
+          });
+        },
+        child: const Icon(Icons.add),
+      ),
       body: Padding(
         padding: const EdgeInsets.all(20.0),
         child: Column(
@@ -18,11 +34,7 @@ class DashboardPage extends StatelessWidget {
           children: [
             const Text(
               'Meeting Overview',
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: Color(0xFF1E293B),
-              ),
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF1E293B)),
             ),
             const SizedBox(height: 20),
             Row(
@@ -48,19 +60,49 @@ class DashboardPage extends StatelessWidget {
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: MeetingContainer(
-                    title: 'Youth Meet',
-                    subtitle: 'January',
-                    attendance: '35/30',
-                    color: Color(0xFF8B5CF6),
-                    icon: Icons.group,
-                  ),
+                  child: MeetingContainer(title: 'Youth Meet', subtitle: 'January', attendance: '35/30', color: Color(0xFF8B5CF6), icon: Icons.group),
                 ),
               ],
+            ),
+
+            Expanded(
+              child: Row(
+                children: [
+                  Expanded(child: SeasonalProgramsListPage()),
+                  Expanded(child: SeasonalProgramsListPage()),
+                ],
+              ),
             ),
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> showAddNewProgramDialog(BuildContext context) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Add New Program'),
+          content: Column(
+            children: [
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const OnlineRegForm()));
+                },
+                child: Text('Online Registration'),
+              ),
+              TextButton(onPressed: () {}, child: Text('Offline Registration')),
+            ],
+          ),
+          actions: [
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancel')),
+            TextButton(onPressed: () => Navigator.pop(context), child: const Text('Add')),
+          ],
+        );
+      },
     );
   }
 }
