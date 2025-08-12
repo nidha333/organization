@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 
-class SimpleBarChart extends StatelessWidget {
+class MonthlyBarchart extends StatelessWidget {
   final List<String> areas;
-  final List<double> percentages;
+  final List<double> participation;
 
-  const SimpleBarChart({
+  const MonthlyBarchart({
     super.key,
     required this.areas,
-    required this.percentages,
+    required this.participation,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 280,
+      height: 280, // Increase height to accommodate the text above
       width: 500,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
@@ -22,11 +22,11 @@ class SimpleBarChart extends StatelessWidget {
           const Padding(
             padding: EdgeInsets.only(bottom: 8),
             child: Text(
-              'Current percentage',
+              'Current Paticipation',
               style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(
             child: BarChart(
               BarChartData(
@@ -37,7 +37,7 @@ class SimpleBarChart extends StatelessWidget {
                     x: index,
                     barRods: [
                       BarChartRodData(
-                        toY: percentages[index],
+                        toY: participation[index],
                         width: 40,
                         borderRadius: BorderRadius.circular(4),
                         color: Colors.blue,
@@ -76,7 +76,10 @@ class SimpleBarChart extends StatelessWidget {
                   ),
                 ),
 
+                // Show grid lines
                 gridData: FlGridData(show: true),
+
+                // Show border around chart
                 borderData: FlBorderData(show: true),
               ),
             ),

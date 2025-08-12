@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:organization/common/constants/app_strings.dart';
-import 'package:organization/common/data/months.dart';
-import 'package:organization/common/extentions/date_time_extention.dart';
-import 'package:organization/features/weekly_council/domain/enums/week_filtertype.dart';
 import 'package:organization/features/weekly_council/domain/model/filtering_week_model.dart';
 
 Widget buildDataTable(List filteredData, FilteringWeekModel filter) {
   if (filteredData.isEmpty) {
     return const Text(
       "No records for this week",
-      style: TextStyle(color: Colors.white70),
+      style: TextStyle(color: Colors.black),
     );
   }
 
@@ -23,7 +20,10 @@ Widget buildDataTable(List filteredData, FilteringWeekModel filter) {
             width: 500,
             child: Row(
               children: [
-                Text('${filter.year} ${filter.month} ${filter.week}'),
+                Text(
+                  '${filter.year} ${filter.month} ${filter.week}',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
                 Spacer(),
                 ElevatedButton(onPressed: () {}, child: Text('edit')),
               ],
@@ -36,7 +36,7 @@ Widget buildDataTable(List filteredData, FilteringWeekModel filter) {
             ),
             headingTextStyle: const TextStyle(
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Colors.black,
               letterSpacing: 1,
             ),
             dataRowColor: MaterialStateColor.resolveWith(
@@ -56,7 +56,7 @@ Widget buildDataTable(List filteredData, FilteringWeekModel filter) {
                   DataCell(
                     Text(
                       item.area,
-                      style: const TextStyle(color: Colors.white70),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                   DataCell(
@@ -68,25 +68,25 @@ Widget buildDataTable(List filteredData, FilteringWeekModel filter) {
                   DataCell(
                     Text(
                       item.percentage.toString(),
-                      style: const TextStyle(color: Colors.white70),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                   DataCell(
                     Text(
                       item.year.toString(),
-                      style: const TextStyle(color: Colors.white70),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                   DataCell(
                     Text(
                       item.month.value,
-                      style: const TextStyle(color: Colors.white70),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                   DataCell(
                     Text(
                       (item.week.index + 1).toString(),
-                      style: const TextStyle(color: Colors.white70),
+                      style: const TextStyle(color: Colors.black),
                     ),
                   ),
                 ],

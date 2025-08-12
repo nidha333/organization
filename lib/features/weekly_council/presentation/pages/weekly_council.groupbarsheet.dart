@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class GroupedWeeklyBarChart extends StatelessWidget {
-  final List<String> weekLabels; // e.g., ['Jan W1', 'Jan W2', ...]
+  final List<String> weekLabels;
   final List<int> doneCounts;
   final List<int> notDoneCounts;
   final List<int> noResponseCounts;
@@ -29,28 +29,28 @@ class GroupedWeeklyBarChart extends StatelessWidget {
               barRods: [
                 BarChartRodData(
                   toY: doneCounts[index].toDouble(),
-                  width: 8,
-                  color: const Color(0xFF70C28C), // Green
+                  width: 40,
+                  color: const Color(0xFF70C28C),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 BarChartRodData(
                   toY: notDoneCounts[index].toDouble(),
-                  width: 8,
-                  color: const Color(0xFFF87171), // Red
+                  width: 40,
+                  color: const Color(0xFFF87171),
                   borderRadius: BorderRadius.circular(4),
                 ),
                 BarChartRodData(
                   toY: noResponseCounts[index].toDouble(),
-                  width: 8,
-                  color: const Color(0xFF9CA3AF), // Gray
+                  width: 40,
+                  color: const Color(0xFF9CA3AF),
                   borderRadius: BorderRadius.circular(4),
                 ),
               ],
-              barsSpace: 4,
+              barsSpace: 2,
             );
           }),
           titlesData: FlTitlesData(
-            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: true)),
+            leftTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(

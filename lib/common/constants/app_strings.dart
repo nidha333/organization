@@ -10,4 +10,6 @@ class AppStrings {
   static const year = 'Year';
   static const month = 'Month';
   static const week = 'Week';
+  static const day = 'day';
+  static const participation = '%';
 }

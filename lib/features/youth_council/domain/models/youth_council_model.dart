@@ -1,7 +1,7 @@
 import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
 import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
 
-class MonthlyCouncil {
+class YouthCouncil {
   final String area;
   final MeetingStatus status;
   final int participation;
@@ -9,7 +9,7 @@ class MonthlyCouncil {
   final int year;
   final DateTime day;
 
-  MonthlyCouncil({
+  YouthCouncil({
     required this.area,
     required this.status,
     required this.participation,
@@ -29,8 +29,8 @@ class MonthlyCouncil {
     };
   }
 
-  factory MonthlyCouncil.fromMap(Map<String, dynamic> map) {
-    return MonthlyCouncil(
+  factory YouthCouncil.fromMap(Map<String, dynamic> map) {
+    return YouthCouncil(
       area: map['area'] as String,
       status: MeetingStatus.fromMap(map['status']),
       participation: map['participation'] as int,

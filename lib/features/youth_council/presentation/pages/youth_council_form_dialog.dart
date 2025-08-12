@@ -6,12 +6,12 @@ import 'package:organization/features/monthly_council/domain/models/monthly_coun
 import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
 import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
 
-class MonthlyCouncilFormDialog extends ConsumerStatefulWidget {
+class YouthCouncilFormDialog extends ConsumerStatefulWidget {
   final int initialYear;
   final MonthsEnum initialMonth;
   final DateTime day;
 
-  const MonthlyCouncilFormDialog({
+  const YouthCouncilFormDialog({
     super.key,
     required this.initialYear,
     required this.initialMonth,
@@ -19,12 +19,12 @@ class MonthlyCouncilFormDialog extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<MonthlyCouncilFormDialog> createState() =>
-      _MonthlyCouncilFormDialogState();
+  ConsumerState<YouthCouncilFormDialog> createState() =>
+      _YouthCouncilFormDialogState();
 }
 
-class _MonthlyCouncilFormDialogState
-    extends ConsumerState<MonthlyCouncilFormDialog> {
+class _YouthCouncilFormDialogState
+    extends ConsumerState<YouthCouncilFormDialog> {
   late int selectedYear;
   late MonthsEnum selectedMonth;
   late DateTime selectedDate;

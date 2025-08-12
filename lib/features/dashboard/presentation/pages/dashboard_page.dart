@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:organization/common/widgets/appbar.dart';
 import 'package:organization/features/dashboard/presentation/widgets/appbar_info_widget.dart';
 import 'package:organization/features/dashboard/presentation/widgets/meeting_card.dart';
+import 'package:organization/features/weekly_council/presentation/pages/weekly_council_page.dart';
+import 'package:organization/features/monthly_council/presentation/pages/monthly_council.dart';
+import 'package:organization/features/youth_council/presentation/pages/youth_council.dart';
 
 class DashboardPage extends StatelessWidget {
   const DashboardPage({super.key});
@@ -26,34 +29,64 @@ class DashboardPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             Row(
-              children: const [
+              children: [
                 Expanded(
-                  child: MeetingContainer(
-                    title: 'Weekly Meet',
-                    subtitle: 'Last Week',
-                    attendance: '12/30',
-                    color: Color(0xFF10B981),
-                    icon: Icons.calendar_today,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const WeeklyCouncilPage(),
+                        ),
+                      );
+                    },
+                    child: const MeetingContainer(
+                      title: 'Weekly Meet',
+                      subtitle: 'Last Week',
+                      attendance: '12/30',
+                      color: Color(0xFF10B981),
+                      icon: Icons.calendar_today,
+                    ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
+
                 Expanded(
-                  child: MeetingContainer(
-                    title: 'Monthly Meet',
-                    subtitle: 'January',
-                    attendance: '5/30',
-                    color: Color(0xFF3B82F6),
-                    icon: Icons.event,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const MonthlyCouncilPage(),
+                        ),
+                      );
+                    },
+                    child: const MeetingContainer(
+                      title: 'Monthly Meet',
+                      subtitle: 'January',
+                      attendance: '5/30',
+                      color: Color(0xFF3B82F6),
+                      icon: Icons.event,
+                    ),
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
+
                 Expanded(
-                  child: MeetingContainer(
-                    title: 'Youth Meet',
-                    subtitle: 'January',
-                    attendance: '35/30',
-                    color: Color(0xFF8B5CF6),
-                    icon: Icons.group,
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (_) => const YouthCouncil()),
+                      );
+                    },
+                    child: const MeetingContainer(
+                      title: 'Youth Meet',
+                      subtitle: 'January',
+                      attendance: '35/30',
+                      color: Color(0xFF8B5CF6),
+                      icon: Icons.group,
+                    ),
                   ),
                 ),
               ],

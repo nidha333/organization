@@ -1,16 +1,13 @@
 import 'dart:developer';
-
-import 'package:organization/features/monthly_council/domain/models/monthly_council.dart';
+import 'package:organization/features/youth_council/domain/models/youth_council_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class SupabaseMonthlyCouncilRepo {
+class SupabaseYouthCouncilRepo {
   final _client = Supabase.instance.client;
-  Future<bool> saveMonthlyData(List<MonthlyCouncil> monthlyDataList) async {
+  Future<bool> saveYouthData(List<YouthCouncil> youthDataList) async {
     try {
-      for (var i = 0; i < monthlyDataList.length; i++) {
-        await _client
-            .from('monthly_council')
-            .insert(monthlyDataList[i].toMap());
+      for (var i = 0; i < youthDataList.length; i++) {
+        await _client.from('youth_council').insert(youthDataList[i].toMap());
       }
       return true;
     } catch (e) {
@@ -19,18 +16,18 @@ class SupabaseMonthlyCouncilRepo {
     }
   }
 
-  Future<List<MonthlyCouncil>> getMonthlyData() async {
+  Future<List<YouthCouncil>> getYouthData() async {
     try {
       log('function calling');
       final response = await Supabase.instance.client
-          .from('monthly_council')
+          .from('youth_council')
           .select()
           .order('id', ascending: false);
 
       log("Fetched rows: ${response.length}");
 
       return (response as List<dynamic>)
-          .map((e) => MonthlyCouncil.fromMap(e as Map<String, dynamic>))
+          .map((e) => YouthCouncil.fromMap(e as Map<String, dynamic>))
           .toList();
     } catch (e, st) {
       log("Error fetching monthly data: $e");
