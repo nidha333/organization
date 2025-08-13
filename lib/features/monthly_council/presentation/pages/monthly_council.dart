@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:organization/common/constants/app_colors.dart';
 import 'package:organization/common/widgets/appbar.dart';
 import 'package:organization/features/monthly_council/application/providers/monthly_council_providers.dart';
-import 'package:organization/features/monthly_council/presentation/pages/monthly_barchart.dart';
+import 'package:organization/features/monthly_council/presentation/pages/monthly_barchart.dart'; // Your grouped bar chart widget
+import 'package:organization/features/monthly_council/presentation/pages/monthly_council_groupbarchart.dart';
 import 'package:organization/features/monthly_council/presentation/pages/monthly_council_piechart.dart';
 import 'package:organization/features/monthly_council/presentation/pages/monthly_councile_form_dialog.dart';
+import 'package:organization/features/monthly_council/presentation/widgets/monthly_council_custombox.dart';
 import 'package:organization/features/monthly_council/presentation/widgets/monthly_database.dart';
 import 'package:organization/features/weekly_council/domain/enums/meeting_status_enum.dart';
 import 'package:organization/features/weekly_council/domain/enums/months_enum.dart';
@@ -22,17 +25,42 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
   bool isCustomFilter = false;
   DateTime? selectedDate;
 
-  // Perfect Blue & White Theme Colors
-  static const Color primaryBlue = Color(0xFF2563EB); // Primary blue
-  static const Color lightBlue = Color(0xFF3B82F6); // Light blue for cards
-  static const Color veryLightBlue = Color(
-    0xFFEBF4FF,
-  ); // Very light blue background
-  static const Color darkBlue = Color(0xFF1E40AF); // Dark blue for text
-  static const Color pureWhite = Colors.white; // Pure white
-  static const Color blueGray = Color(0xFFF8FAFC); // Blue-tinted white
-  static const Color accent = Color(0xFF60A5FA); // Accent blue
-  static const Color blackText = Colors.black87; // Black text for readability
+  Map<MonthsEnum, Map<String, int>> _aggregateMonthlyStatusCounts(List data) {
+    final Map<MonthsEnum, Map<String, int>> result = {};
+
+    for (var item in data) {
+      MonthsEnum monthEnum;
+
+      if (item.month is String) {
+        monthEnum = MonthsEnum.fromMap(item.month as String);
+      } else if (item.month is MonthsEnum) {
+        monthEnum = item.month as MonthsEnum;
+      } else {
+        monthEnum = MonthsEnum.january;
+      }
+
+      if (!result.containsKey(monthEnum)) {
+        result[monthEnum] = {'done': 0, 'notDone': 0, 'noResponse': 0};
+      }
+
+      switch (item.status) {
+        case MeetingStatus.done:
+          result[monthEnum]!['done'] = result[monthEnum]!['done']! + 1;
+          break;
+        case MeetingStatus.notDone:
+          result[monthEnum]!['notDone'] = result[monthEnum]!['notDone']! + 1;
+          break;
+        case MeetingStatus.noRsponse:
+          result[monthEnum]!['noResponse'] =
+              result[monthEnum]!['noResponse']! + 1;
+          break;
+        default:
+          break;
+      }
+    }
+
+    return result;
+  }
 
   String get _selectedFilterType {
     final now = DateTime.now();
@@ -52,12 +80,12 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
     final storedDataAsync = ref.watch(getMonthlyCouncilProvider);
 
     return Scaffold(
-      backgroundColor: blueGray,
+      backgroundColor: AppColors.blueGray,
       appBar: NavBar,
       floatingActionButton: FloatingActionButton(
         onPressed: () => showAddMonthlyCouncilDialog(context),
-        backgroundColor: primaryBlue,
-        foregroundColor: pureWhite,
+        backgroundColor: AppColors.primaryBlue,
+        foregroundColor: AppColors.pureWhite,
         elevation: 4,
         child: const Icon(Icons.add),
       ),
@@ -65,16 +93,16 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
         padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            // Header Section
+            // Header
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                color: pureWhite,
+                color: AppColors.pureWhite,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryBlue.withOpacity(0.08),
+                    color: AppColors.primaryBlue.withOpacity(0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -84,7 +112,7 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
                 children: [
                   Icon(
                     Icons.calendar_view_month_rounded,
-                    color: primaryBlue,
+                    color: AppColors.primaryBlue,
                     size: 28,
                   ),
                   const SizedBox(width: 12),
@@ -93,7 +121,7 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
                     style: TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
-                      color: blackText,
+                      color: AppColors.blackText,
                     ),
                   ),
                 ],
@@ -102,15 +130,15 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
 
             const SizedBox(height: 24),
 
-            // Filter Buttons Section
+            // Filter Buttons
             Container(
               padding: const EdgeInsets.all(20),
               decoration: BoxDecoration(
-                color: pureWhite,
+                color: AppColors.pureWhite,
                 borderRadius: BorderRadius.circular(16),
                 boxShadow: [
                   BoxShadow(
-                    color: primaryBlue.withOpacity(0.08),
+                    color: AppColors.primaryBlue.withOpacity(0.08),
                     blurRadius: 8,
                     offset: const Offset(0, 2),
                   ),
@@ -150,36 +178,28 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
 
             const SizedBox(height: 30),
 
-            // Main Content
+            // Content
             SizedBox(
               height: 500,
               child: storedDataAsync.when(
                 data: (data) {
-                  if (data == null) {
-                    return Center(
-                      child: _buildEmptyStateCard(
-                        "No data available",
-                        Icons.info_outline,
-                        Colors.orange,
-                      ),
-                    );
-                  }
-
                   if (data.isEmpty) {
                     return Center(
                       child: _buildEmptyStateCard(
-                        "No monthly records found",
-                        Icons.folder_open,
-                        Colors.grey,
+                        // ignore: unnecessary_null_comparison
+                        data == null
+                            ? "No data available"
+                            : "No monthly records found",
+                        // ignore: unnecessary_null_comparison
+                        data == null ? Icons.info_outline : Icons.folder_open,
+                        // ignore: unnecessary_null_comparison
+                        data == null ? Colors.orange : Colors.grey,
                       ),
                     );
                   }
 
-                  // Filtering logic
-                  final monthlyData = data.where((e) {
+                  final filteredData = data.where((e) {
                     final date = e.day;
-                    if (date is! DateTime) return false;
-
                     if (isCustomFilter && selectedDate != null) {
                       return date.year == selectedDate!.year &&
                           date.month == selectedDate!.month &&
@@ -190,70 +210,98 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
                     }
                   }).toList();
 
-                  final doneCount = monthlyData
+                  final monthlyStatusMap = _aggregateMonthlyStatusCounts(data);
+
+                  final monthsWithData = monthlyStatusMap.keys.toList()
+                    ..sort((a, b) => a.index.compareTo(b.index));
+
+                  final monthLabels = monthsWithData;
+
+                  final doneCounts = monthLabels
+                      .map((m) => monthlyStatusMap[m]!['done'] ?? 0)
+                      .toList();
+                  final notDoneCounts = monthLabels
+                      .map((m) => monthlyStatusMap[m]!['notDone'] ?? 0)
+                      .toList();
+                  final noResponseCounts = monthLabels
+                      .map((m) => monthlyStatusMap[m]!['noResponse'] ?? 0)
+                      .toList();
+
+                  final doneCount = filteredData
                       .where((e) => e.status == MeetingStatus.done)
                       .length;
-                  final notDoneCount = monthlyData
+                  final notDoneCount = filteredData
                       .where((e) => e.status == MeetingStatus.notDone)
                       .length;
-                  final noResponseCount = monthlyData
+                  final noResponseCount = filteredData
                       .where((e) => e.status == MeetingStatus.noRsponse)
                       .length;
 
-                  final areas = monthlyData
-                      .map((e) => e.area ?? 'Unknown')
-                      .toList();
-                  final participation = monthlyData.map((e) {
+                  final areas = filteredData.map((e) => e.area).toList();
+                  final participation = filteredData.map((e) {
                     final val = e.participation;
-                    if (val is num) return val.toDouble();
-                    if (val is String) {
-                      return double.tryParse(val.toString()) ?? 0.0;
-                    }
-                    return 0.0;
+                    return val.toDouble();
                   }).toList();
 
-                  return Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: _buildCard(
-                          child: buildMonthlyDataTable(
-                            monthlyData,
-
-                            isCustomFilter && selectedDate != null
-                                ? selectedDate!
-                                : DateTime(selectedYear, selectedMonth, 1),
-                          ),
+                  return SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        GroupedMonthlyBarChart(
+                          monthLabels: monthLabels,
+                          doneCounts: doneCounts,
+                          notDoneCounts: notDoneCounts,
+                          noResponseCounts: noResponseCounts,
                         ),
-                      ),
-                      SizedBox(width: 20),
-                      Expanded(
-                        flex: 2,
-                        child: _buildCard(
-                          child: MonthlyCouncilPiechart(
-                            doneCount: doneCount,
-                            notDoneCount: notDoneCount,
-                            noResponseCount: noResponseCount,
-                          ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 3,
+                              child: _buildCard(
+                                child: buildMonthlyDataTable(
+                                  filteredData,
+                                  isCustomFilter && selectedDate != null
+                                      ? selectedDate!
+                                      : DateTime(
+                                          selectedYear,
+                                          selectedMonth,
+                                          1,
+                                        ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width: 20),
+                            Expanded(
+                              flex: 2,
+                              child: _buildCard(
+                                child: MonthlyCouncilPiechart(
+                                  doneCount: doneCount,
+                                  notDoneCount: notDoneCount,
+                                  noResponseCount: noResponseCount,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 20),
+                            Expanded(
+                              flex: 3,
+                              child: _buildCard(
+                                child: MonthlyBarchart(
+                                  areas: areas,
+                                  participation: participation,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        flex: 2,
-                        child: _buildCard(
-                          child: MonthlyBarchart(
-                            areas: areas,
-                            participation: participation,
-                          ),
-                        ),
-                      ),
-                    ],
+                      ],
+                    ),
                   );
                 },
                 loading: () => Center(
                   child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(primaryBlue),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppColors.primaryBlue,
+                    ),
                   ),
                 ),
                 error: (err, stack) => Center(
@@ -275,11 +323,11 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
     return Container(
       height: 400,
       decoration: BoxDecoration(
-        color: pureWhite,
+        color: AppColors.pureWhite,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: primaryBlue.withOpacity(0.08),
+            color: AppColors.primaryBlue.withOpacity(0.08),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -290,15 +338,34 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
     );
   }
 
+  void _showCustomMonthDialog() {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return CustomMonthPickerDialog(
+          initialYear: selectedYear,
+          initialMonth: MonthsEnum.values[selectedMonth - 1],
+          onApply: (year, month) {
+            setState(() {
+              selectedYear = year;
+              selectedMonth = month.index + 1;
+              isCustomFilter = false;
+            });
+          },
+        );
+      },
+    );
+  }
+
   Widget _buildEmptyStateCard(String message, IconData icon, Color color) {
     return Container(
       padding: const EdgeInsets.all(32),
       decoration: BoxDecoration(
-        color: pureWhite,
+        color: AppColors.pureWhite,
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: primaryBlue.withOpacity(0.08),
+            color: AppColors.primaryBlue.withOpacity(0.08),
             blurRadius: 8,
             offset: const Offset(0, 2),
           ),
@@ -333,14 +400,16 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
     return ElevatedButton(
       onPressed: onPressed,
       style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? primaryBlue : pureWhite,
-        foregroundColor: isSelected ? pureWhite : blackText,
+        backgroundColor: isSelected
+            ? AppColors.primaryBlue
+            : AppColors.pureWhite,
+        foregroundColor: isSelected ? AppColors.pureWhite : AppColors.blackText,
         elevation: isSelected ? 3 : 1,
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
           side: BorderSide(
-            color: isSelected ? primaryBlue : veryLightBlue,
+            color: isSelected ? AppColors.primaryBlue : AppColors.veryLightBlue,
             width: 1.5,
           ),
         ),
@@ -351,163 +420,6 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
           fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
         ),
       ),
-    );
-  }
-
-  void _showCustomMonthDialog() {
-    int tempSelectedYear = selectedYear;
-    MonthsEnum tempSelectedMonth = MonthsEnum.values[selectedMonth - 1];
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return StatefulBuilder(
-          builder: (context, setDialogState) {
-            return AlertDialog(
-              backgroundColor: pureWhite,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-              ),
-              title: Container(
-                padding: const EdgeInsets.only(bottom: 16),
-                decoration: BoxDecoration(
-                  border: Border(
-                    bottom: BorderSide(color: veryLightBlue, width: 1),
-                  ),
-                ),
-                child: Row(
-                  children: [
-                    Icon(Icons.date_range, color: primaryBlue, size: 24),
-                    const SizedBox(width: 12),
-                    Text(
-                      'Select Month',
-                      style: TextStyle(
-                        color: blackText,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 18,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: veryLightBlue,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: DropdownButton<int>(
-                            value: tempSelectedYear,
-                            isExpanded: true,
-                            underline: const SizedBox(),
-                            style: TextStyle(color: blackText),
-                            items: List.generate(5, (index) {
-                              int year = DateTime.now().year - 2 + index;
-                              return DropdownMenuItem(
-                                value: year,
-                                child: Text(year.toString()),
-                              );
-                            }),
-                            onChanged: (year) {
-                              if (year != null) {
-                                setDialogState(() {
-                                  tempSelectedYear = year;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 12),
-                      Expanded(
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 12,
-                            vertical: 4,
-                          ),
-                          decoration: BoxDecoration(
-                            color: veryLightBlue,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: DropdownButton<MonthsEnum>(
-                            value: tempSelectedMonth,
-                            isExpanded: true,
-                            underline: const SizedBox(),
-                            style: TextStyle(color: blackText),
-                            items: MonthsEnum.values.map((month) {
-                              return DropdownMenuItem(
-                                value: month,
-                                child: Text(month.name),
-                              );
-                            }).toList(),
-                            onChanged: (value) {
-                              if (value != null) {
-                                setDialogState(() {
-                                  tempSelectedMonth = value;
-                                });
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: TextButton.styleFrom(
-                    foregroundColor: Colors.grey[600],
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                  ),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    setState(() {
-                      selectedYear = tempSelectedYear;
-                      selectedMonth = tempSelectedMonth.index + 1;
-                      isCustomFilter = false;
-                    });
-                    Navigator.pop(context);
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: primaryBlue,
-                    foregroundColor: pureWhite,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20,
-                      vertical: 12,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                  ),
-                  child: const Text(
-                    'Apply',
-                    style: TextStyle(fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            );
-          },
-        );
-      },
     );
   }
 

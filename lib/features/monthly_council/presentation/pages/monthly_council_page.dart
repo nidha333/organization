@@ -15,7 +15,7 @@ class _MonthlyCouncilPageState extends ConsumerState<MonthlyCouncilPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: NavBar, // ✅ If NavBar is a widget, call it as a constructor
+      appBar: NavBar,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
           showAddMonthlyCouncilDialog(context); // ✅ Call the method

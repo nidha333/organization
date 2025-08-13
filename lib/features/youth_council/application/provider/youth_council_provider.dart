@@ -10,7 +10,7 @@ final saveYouthCouncilProvider =
 
 final getYouthCouncilProvider = FutureProvider<List<YouthCouncil>>((ref) async {
   final repo = SupabaseYouthCouncilRepo();
-  print('Provider: get monthlycouncil()');
+  print('Provider: get youthcouncil()');
   final response = await repo.getYouthData();
   print("Response: ${response.length}");
   return response;

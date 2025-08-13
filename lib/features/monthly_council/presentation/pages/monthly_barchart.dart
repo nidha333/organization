@@ -14,7 +14,7 @@ class MonthlyBarchart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 280, // Increase height to accommodate the text above
+      height: 280,
       width: 500,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
